@@ -192,39 +192,42 @@
         doc.setFontSize(12);
         doc.text("POR SUA PALAVRA", 15, 23);
 
-        // --- TROCA: Dia e Referência agora na Direita Superior (Cabeçalho) ---
+        // Referência (Direita Superior)
         doc.setFont("helvetica", "bold");
-        doc.setFontSize(26); // Bem visível
-        doc.setTextColor(255, 255, 255); // Branco
+        doc.setFontSize(26); 
+        doc.setTextColor(255, 255, 255); 
         doc.text(tituloDia.toUpperCase(), w - 15, 16, {align: 'right'});
         
         doc.setFontSize(16);
-        doc.setTextColor(...corDestaque); // Dourado/Amarelo
+        doc.setTextColor(...corDestaque); 
         doc.text(referencia, w - 15, 25, {align: 'right'});
 
 
-        // --- TROCA: Número da Questão agora no Corpo Esquerdo ---
-        doc.setTextColor(20, 20, 20);
+        // --- NÚMERO E PERGUNTA (LADO A LADO) ---
+        
+        // 1. Número da Questão (Preto)
+        doc.setTextColor(0, 0, 0); // COR ALTERADA PARA PRETO
         doc.setFont("helvetica", "bold");
         doc.setFontSize(50); 
-        doc.text(`${numero})`, 15, 55);
+        doc.text(`${numero})`, 15, 60);
 
-        // Pergunta
+        // 2. Pergunta (À direita do número)
         doc.setTextColor(20, 20, 20);
         doc.setFont("helvetica", "bold");
-        doc.setFontSize(34); // Fonte Gigante
+        doc.setFontSize(34); 
         
-        // Começa a pergunta um pouco mais pra direita para não bater no número
-        // ou abaixo dele. Vamos colocar levemente abaixo e alinhado.
-        const perguntaQuebrada = doc.splitTextToSize(pergunta, w - 30);
-        doc.text(perguntaQuebrada, 15, 70); // Desci um pouco para 70 para caber o número em cima
+        // Calcula a largura da pergunta (Total - MargemEsq - EspaçoNumero - MargemDir)
+        // Começa em X=45
+        const larguraPergunta = w - 45 - 15;
+        const perguntaQuebrada = doc.splitTextToSize(pergunta, larguraPergunta);
+        doc.text(perguntaQuebrada, 45, 60); // Posiciona em X=45, Y=60
 
-        // Alternativas
+        // Alternativas (Calcula nova altura baseada na pergunta)
         const alturaPergunta = perguntaQuebrada.length * 14; 
-        let y = 70 + alturaPergunta + 15; 
-        if (y < 120) y = 120; // Garante um espaço mínimo
+        let y = 60 + alturaPergunta + 20; 
+        if (y < 115) y = 115; 
 
-        doc.setFontSize(28); // Fonte Aumentada
+        doc.setFontSize(28); 
         doc.setFont("helvetica", "normal");
 
         const desenharAlt = (letra, texto) => {
@@ -269,21 +272,18 @@
             if(item.dia.includes("BÔNUS")) doc.setTextColor(211, 84, 0); 
             else doc.setTextColor(40, 40, 40); 
             
-            // Texto do lado esquerdo
             doc.text(`${item.num}. ${item.dia}`, 25, y + 2);
 
-            // Bolinha da Resposta (Direita)
+            // Bolinha da Resposta
             const corBolinha = item.dia.includes("BÔNUS") ? [211, 84, 0] : [21, 67, 96]; 
             doc.setFillColor(...corBolinha);
             
-            // Aumentei o raio da bolinha para caber a letra maior (Raio 10)
             doc.circle(w - 40, y - 1, 8, 'F');
 
             // Letra da Resposta
             doc.setTextColor(255, 255, 255); 
-            doc.setFontSize(32); // --- FONTE AUMENTADA AQUI ---
+            doc.setFontSize(32); 
             doc.setFont("helvetica", "bold");
-            // Ajuste fino no Y (+3) para centralizar visualmente a letra grande
             doc.text(item.resp, w - 40, y + 3, {align: 'center'});
 
             doc.setDrawColor(230, 230, 230);
