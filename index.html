@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador Reavivados - Com Bônus</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f9; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: #2c3e50; }
+        .intro { text-align: center; margin-bottom: 30px; color: #666; }
+        
+        .day-block { border: 1px solid #ddd; padding: 20px; margin-bottom: 20px; border-radius: 8px; background-color: #fafafa; }
+        .day-block h3 { margin-top: 0; color: #2980b9; display: inline-block;}
+        
+        /* Estilo especial para o Bônus */
+        .bonus-block { border: 2px solid #f39c12; background-color: #fef9e7; }
+        .bonus-block h3 { color: #d35400; }
+
+        label { display: block; margin-top: 10px; font-weight: bold; font-size: 0.9em; color: #444; }
+        input[type="text"], select { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        
+        .gabarito-box { background-color: #e8f6f3; padding: 10px; border-radius: 5px; border: 1px solid #27ae60; margin-top: 15px; }
+        .gabarito-box label { color: #27ae60; }
+        select { font-weight: bold; }
+
+        button { display: block; width: 100%; padding: 15px; background-color: #27ae60; color: white; border: none; border-radius: 5px; font-size: 1.2em; cursor: pointer; transition: 0.3s; margin-top: 20px; }
+        button:hover { background-color: #219150; }
+
+        .footer { text-align: center; margin-top: 20px; font-size: 0.8em; color: #aaa; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Gerador de Slides PDF</h1>
+    <p class="intro">Preencha os dias da semana. O bônus é opcional.</p>
+
+    <form id="quizForm">
+        <div id="daysContainer"></div>
+        
+        <div class="day-block bonus-block">
+            <h3>★ Pergunta Bônus (Opcional)</h3>
+            <p style="font-size:0.9em; color:#666; margin-top:0;">Se deixar a pergunta em branco, este slide não será gerado.</p>
+            
+            <label>Título ou Referência:</label>
+            <input type="text" id="bonus_ref" placeholder="Ex: Curiosidade da Semana / Ellen White">
+            
+            <label>Pergunta Bônus:</label>
+            <input type="text" id="bonus_perg" placeholder="Digite a pergunta bônus...">
+            
+            <label>Alternativas:</label>
+            <input type="text" id="bonus_altA" placeholder="A) Opção 1">
+            <input type="text" id="bonus_altB" placeholder="B) Opção 2">
+            <input type="text" id="bonus_altC" placeholder="C) Opção 3">
+
+            <div class="gabarito-box">
+                <label>Resposta correta (Bônus):</label>
+                <select id="bonus_respCorreta">
+                    <option value="">Selecione...</option>
+                    <option value="A">Alternativa A</option>
+                    <option value="B">Alternativa B</option>
+                    <option value="C">Alternativa C</option>
+                </select>
+            </div>
+        </div>
+
+        <button type="button" onclick="gerarPDF()">Baixar PDF Completo</button>
+    </form>
+    <p class="footer">Gerador seguro e offline.</p>
+</div>
+
+<script>
+    const dias = [
+        "Domingo", "Segunda-feira", "Terça-feira", "Quarta-feira", 
+        "Quinta-feira", "Sexta-feira", "Sábado"
+    ];
+
+    const container = document.getElementById('daysContainer');
+    
+    // Gera os campos para dias normais
+    dias.forEach((dia, index) => {
+        const html = `
+            <div class="day-block">
+                <h3>${dia}</h3>
+                <label>Capítulo / Referência:</label>
+                <input type="text" id="ref_${index}" placeholder="Ex: Gênesis 1">
+                
+                <label>Pergunta:</label>
+                <input type="text" id="perg_${index}" placeholder="Digite a pergunta...">
+                
+                <label>Alternativas:</label>
+                <input type="text" id="altA_${index}" placeholder="A) Opção 1">
+                <input type="text" id="altB_${index}" placeholder="B) Opção 2">
+                <input type="text" id="altC_${index}" placeholder="C) Opção 3">
+
+                <div class="gabarito-box">
+                    <label>Qual é a resposta correta?</label>
+                    <select id="respCorreta_${index}">
+                        <option value="">Selecione...</option>
+                        <option value="A">Alternativa A</option>
+                        <option value="B">Alternativa B</option>
+                        <option value="C">Alternativa C</option>
+                    </select>
+                </div>
+            </div>
+        `;
+        container.insertAdjacentHTML('beforeend', html);
+    });
+
+    async function gerarPDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+        
+        const larguraPagina = doc.internal.pageSize.getWidth();
+        const alturaPagina = doc.internal.pageSize.getHeight();
+        
+        // Paleta de Cores
+        const corAzul = [41, 128, 185];
+        const corTexto = [44, 62, 80];
+        const corBonus = [243, 156, 18]; // Laranja para o slide bônus
+
+        let listaGabarito = [];
+
+        // --- 1. SLIDES DOS DIAS NORMAIS ---
+        for (let i = 0; i < dias.length; i++) {
+            const dia = dias[i];
+            const ref = document.getElementById(`ref_${i}`).value || "Leitura do dia";
+            const pergunta = document.getElementById(`perg_${i}`).value || "Sem pergunta definida";
+            const altA = document.getElementById(`altA_${i}`).value;
+            const altB = document.getElementById(`altB_${i}`).value;
+            const altC = document.getElementById(`altC_${i}`).value;
+            const respCorreta = document.getElementById(`respCorreta_${i}`).value || "-";
+
+            listaGabarito.push({ dia: dia, ref: ref, resp: respCorreta });
+
+            // Renderiza Slide
+            desenharSlide(doc, corAzul, dia, ref, pergunta, altA, altB, altC);
+            doc.addPage();
+        }
+
+        // --- 2. VERIFICAÇÃO E SLIDE BÔNUS ---
+        const bonusPerg = document.getElementById('bonus_perg').value;
+        
+        if (bonusPerg && bonusPerg.trim() !== "") {
+            const bonusRef = document.getElementById('bonus_ref').value || "Pergunta Extra";
+            const bonusAltA = document.getElementById('bonus_altA').value;
+            const bonusAltB = document.getElementById('bonus_altB').value;
+            const bonusAltC = document.getElementById('bonus_altC').value;
+            const bonusResp = document.getElementById('bonus_respCorreta').value || "-";
+
+            // Adiciona ao gabarito
+            listaGabarito.push({ dia: "BÔNUS", ref: bonusRef, resp: bonusResp });
+
+            // Renderiza Slide Bônus (Com cor diferente no topo)
+            desenharSlide(doc, corBonus, "Pergunta Bônus", bonusRef, bonusPerg, bonusAltA, bonusAltB, bonusAltC);
+            doc.addPage();
+        }
+
+        // --- 3. SLIDE DE AVISO (PAUSA) ---
+        doc.setFillColor(50, 50, 50); 
+        doc.rect(0, 0, larguraPagina, alturaPagina, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(40);
+        doc.setFont("helvetica", "bold");
+        doc.text("GABARITO A SEGUIR", larguraPagina / 2, alturaPagina / 2, { align: "center" });
+        doc.setFontSize(16);
+        doc.setFont("helvetica", "normal");
+        doc.text("(Aguarde para avançar)", larguraPagina / 2, (alturaPagina / 2) + 15, { align: "center" });
+
+        doc.addPage();
+
+        // --- 4. GABARITO FINAL ---
+        doc.setFillColor(...corAzul); 
+        doc.rect(0, 0, larguraPagina, 30, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(22);
+        doc.setFont("helvetica", "bold");
+        doc.text("GABARITO DA SEMANA", larguraPagina / 2, 20, { align: "center" });
+
+        doc.setTextColor(...corTexto);
+        doc.setFontSize(16);
+        
+        let yLine = 50;
+        
+        listaGabarito.forEach((item) => {
+            doc.setFont("helvetica", "bold");
+            // Se for bônus, pinta o nome de laranja
+            if(item.dia === "BÔNUS") doc.setTextColor(211, 84, 0);
+            else doc.setTextColor(...corTexto);
+            
+            doc.text(`${item.dia}`, 20, yLine);
+            
+            doc.setTextColor(...corTexto); // Volta cor normal
+            doc.setFont("helvetica", "normal");
+            doc.text(`(${item.ref})`, 70, yLine);
+            
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(18);
+            doc.setTextColor(...corAzul);
+            doc.text(`Resposta: ${item.resp}`, larguraPagina - 40, yLine);
+            
+            doc.setTextColor(...corTexto);
+            doc.setFontSize(16);
+            doc.setDrawColor(200, 200, 200);
+            doc.line(20, yLine + 3, larguraPagina - 20, yLine + 3);
+
+            yLine += 18;
+        });
+
+        doc.save('Reavivados_Bonus.pdf');
+    }
+
+    // Função auxiliar para desenhar o layout padrão do slide
+    function desenharSlide(doc, corTopo, titulo, subtitulo, pergunta, a, b, c) {
+        const larguraPagina = doc.internal.pageSize.getWidth();
+        
+        // Cabeçalho
+        doc.setFillColor(...corTopo); 
+        doc.rect(0, 0, larguraPagina, 30, 'F');
+        
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(22);
+        doc.setFont("helvetica", "bold");
+        doc.text("Reavivados por Sua Palavra", larguraPagina / 2, 13, { align: "center" });
+        
+        doc.setFontSize(14);
+        doc.setFont("helvetica", "normal");
+        doc.text(`${titulo} - ${subtitulo}`, larguraPagina / 2, 22, { align: "center" });
+
+        // Corpo
+        doc.setTextColor(44, 62, 80);
+        doc.setFontSize(24);
+        doc.setFont("helvetica", "bold");
+        const splitPergunta = doc.splitTextToSize(pergunta, larguraPagina - 40);
+        doc.text(splitPergunta, 20, 60);
+
+        // Alternativas
+        doc.setFontSize(18);
+        doc.setFont("helvetica", "normal");
+        let yPos = 110;
+
+        if(a) { doc.text(`A) ${a}`, 25, yPos); yPos += 15; }
+        if(b) { doc.text(`B) ${b}`, 25, yPos); yPos += 15; }
+        if(c) { doc.text(`C) ${c}`, 25, yPos); }
+    }
+</script>
+
+</body>
+</html>
