@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>Gerador PowerPoint</title>
+    
+    <script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+    
+    <style>
+        /* --- ESTILOS GERAIS --- */
+        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #eef2f5; margin: 0; padding: 20px; color: #333; }
+
+        .back-link { display: inline-block; margin-bottom: 20px; color: #3498db; text-decoration: none; font-weight: bold; }
+        .back-link:hover { text-decoration: underline; }
+        
+        .container { 
+            max-width: 900px; 
+            margin: 0 auto; 
+            background: white; 
+            padding: 40px; 
+            border-radius: 15px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
+        }
+        
+        h1 { text-align: center; color: #2c3e50; margin-bottom: 5px; font-size: 2rem; text-transform: uppercase; letter-spacing: 1px; }
+        .subtitle { text-align: center; color: #7f8c8d; font-size: 1rem; margin-bottom: 30px; }
+
+        /* --- BLOCOS DE PERGUNTAS --- */
+        .day-block { 
+            background: #fff; 
+            border: 1px solid #e0e0e0; 
+            padding: 25px; 
+            margin-bottom: 25px; 
+            border-radius: 10px; 
+            border-left: 5px solid #2c3e50; 
+        }
+        
+        .day-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .day-header h3 { margin: 0; color: #2c3e50; font-size: 1.4rem; }
+        .day-number { background: #2c3e50; color: white; padding: 5px 12px; border-radius: 20px; font-weight: bold; font-size: 0.9rem; white-space: nowrap; }
+
+        .bonus-block { border-left-color: #d35400; background-color: #fffaf0; }
+        .bonus-block .day-header h3 { color: #d35400; }
+        .bonus-block .day-number { background: #d35400; }
+
+        /* --- FORMULÁRIO E GRID --- */
+        label { display: block; margin-top: 12px; font-weight: 700; font-size: 0.85rem; color: #7f8c8d; text-transform: uppercase; }
+        input[type="text"], select { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem; box-sizing: border-box; }
+        
+        /* Grid para colocar campos lado a lado no PC e empilhado no mobile */
+        .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        
+        .box-alternativas { background: #f9f9f9; padding: 15px; border-radius: 8px; margin-top: 10px; }
+        .box-alternativas input { margin-bottom: 8px; }
+        .box-alternativas input:last-child { margin-bottom: 0; }
+
+        .verso-input { background-color: #f0f8ff; border-color: #b3e5fc !important; color: #0277bd; font-weight: 500; }
+        .gabarito-area { background-color: #e8f8f5; padding: 15px; border-radius: 8px; margin-top: 15px; border: 1px solid #a3e4d7; }
+
+        button { width: 100%; padding: 20px; background: linear-gradient(135deg, #2c3e50, #3498db); color: white; border: none; border-radius: 8px; font-size: 1.3rem; font-weight: bold; cursor: pointer; margin-top: 30px; transition: 0.3s; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        button:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.25); }
+        button:disabled { background: #95a5a6; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        /* --- RESPONSIVIDADE (MOBILE) --- */
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .container { padding: 20px; }
+            
+            h1 { font-size: 1.5rem; }
+            .subtitle { font-size: 0.9rem; }
+
+            .day-block { padding: 15px; }
+            .day-header h3 { font-size: 1.1rem; }
+            
+            /* Transforma grid de 2 colunas em 1 coluna */
+            .input-row { grid-template-columns: 1fr; gap: 0; }
+            
+            button { font-size: 1.1rem; padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <a href="index.html" class="back-link">← Voltar ao Menu Principal</a>
+    <h1>Gerador PowerPoint - <span style="color:#3498db">Reavivados por sua palavra</span></h1>
+
+    <form id="quizForm">
+        <div id="daysContainer"></div>
+        
+        <div class="day-block bonus-block">
+            <div class="day-header">
+                <h3>★ Pergunta Bônus</h3>
+                <span class="day-number">Extra</span>
+            </div>
+            <div class="input-row">
+                <div><label>Referência:</label><input type="text" id="bonus_ref" placeholder="Ex: Curiosidade..."></div>
+                <div><label>Numero do Verso (Correção):</label><input type="text" id="bonus_verso" class="verso-input" placeholder="Ex: 10-12"></div>
+            </div>
+            
+            <label>Pergunta:</label><input type="text" id="bonus_perg" placeholder="Pergunta bônus...">
+            
+            <div class="box-alternativas">
+                <label style="margin-top:0">Alternativas:</label>
+                <input type="text" id="bonus_altA" placeholder="A)">
+                <input type="text" id="bonus_altB" placeholder="B)">
+                <input type="text" id="bonus_altC" placeholder="C)">
+            </div>
+            
+            <div class="gabarito-area">
+                <label>Resposta Correta:</label>
+                <select id="bonus_respCorreta"><option value="">Selecione...</option><option value="A">A</option><option value="B">B</option><option value="C">C</option></select>
+            </div>
+        </div>
+
+        <button type="button" id="btnBaixar" onclick="gerarPPTX()">BAIXAR APRESENTAÇÃO (.PPTX)</button>
+    </form>
+</div>
+
+<script>
+    const dias = ["Sábado", "Domingo", "Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira"];
+    const container = document.getElementById('daysContainer');
+
+    // Gera os Inputs (HTML Otimizado com classes)
+    dias.forEach((dia, index) => {
+        const num = index + 1;
+        const html = `
+            <div class="day-block">
+                <div class="day-header"><h3>${dia}</h3><span class="day-number">#${num}</span></div>
+                
+                <div class="input-row">
+                    <div><label>Referência:</label><input type="text" id="ref_${index}" placeholder="Ex: Gênesis 1"></div>
+                    <div><label>Número do Verso (Correção):</label><input type="text" id="verso_${index}" class="verso-input" placeholder="Ex: 10-12"></div>
+                </div>
+
+                <label>Pergunta:</label><input type="text" id="perg_${index}" placeholder="Digite a pergunta...">
+                
+                <div class="box-alternativas">
+                    <label style="margin-top:0">Alternativas:</label>
+                    <input type="text" id="altA_${index}" placeholder="A)">
+                    <input type="text" id="altB_${index}" placeholder="B)">
+                    <input type="text" id="altC_${index}" placeholder="C)">
+                </div>
+
+                <div class="gabarito-area">
+                    <label>Resposta Correta:</label>
+                    <select id="respCorreta_${index}"><option value="">Selecione...</option><option value="A">A</option><option value="B">B</option><option value="C">C</option></select>
+                </div>
+            </div>`;
+        container.insertAdjacentHTML('beforeend', html);
+    });
+
+    async function gerarPPTX() {
+        const btn = document.getElementById("btnBaixar");
+        
+        if (typeof PptxGenJS === 'undefined') {
+            alert("ERRO: A biblioteca PowerPoint não carregou. Verifique sua conexão.");
+            return;
+        }
+
+        try {
+            btn.innerText = "AGUARDE... GERANDO...";
+            btn.disabled = true;
+
+            let pptx = new PptxGenJS();
+            pptx.layout = 'LAYOUT_16x9'; 
+            pptx.author = 'Igreja';
+            pptx.title = 'Reavivados por Sua Palavra';
+
+            // Cores
+            const AZUL_FUNDO = "1A2533";
+            const AZUL_HEADER = "2C3E50";
+            const BRANCO = "FFFFFF";
+            const LARANJA = "E67E22";
+            const VERDE = "27AE60";
+            const CINZA_BG = "F4F6F7";
+            const TEXTO = "2C3E50";
+
+            // Coletar Dados
+            let lista = [];
+            const getSafeVal = (id) => {
+                const el = document.getElementById(id);
+                return el ? String(el.value || "").trim() : "";
+            };
+
+            for (let i = 0; i < dias.length; i++) {
+                const r = getSafeVal(`ref_${i}`);
+                const p = getSafeVal(`perg_${i}`);
+                if(p || r) {
+                    lista.push({
+                        dia: dias[i], num: i+1, ref: r, perg: p,
+                        a: getSafeVal(`altA_${i}`), b: getSafeVal(`altB_${i}`), c: getSafeVal(`altC_${i}`),
+                        resp: getSafeVal(`respCorreta_${i}`), verso: getSafeVal(`verso_${i}`),
+                        isBonus: false
+                    });
+                }
+            }
+            
+            const bP = getSafeVal('bonus_perg');
+            if(bP) {
+                lista.push({
+                    dia: "BÔNUS", num: 8, ref: getSafeVal('bonus_ref') || "Extra",
+                    perg: bP, a: getSafeVal('bonus_altA'), b: getSafeVal('bonus_altB'), c: getSafeVal('bonus_altC'),
+                    resp: getSafeVal('bonus_respCorreta'), verso: getSafeVal('bonus_verso'),
+                    isBonus: true
+                });
+            }
+
+            if(lista.length === 0) { throw new Error("Preencha pelo menos uma pergunta!"); }
+
+            // ==========================================
+            // CAPA DESIGN PLUS
+            // ==========================================
+            let slideCapa = pptx.addSlide();
+            slideCapa.background = { color: AZUL_FUNDO };
+            slideCapa.addShape(pptx.ShapeType.ellipse, { x: 7.5, y: -2, w: 6, h: 6, fill: { color: "3498DB", transparency: 85 } });
+            slideCapa.addShape(pptx.ShapeType.ellipse, { x: -2, y: 3.5, w: 5, h: 5, fill: { color: "3498DB", transparency: 90 } });
+            slideCapa.addShape(pptx.ShapeType.rect, { x: 0.5, y: 0.5, w: 9, h: 4.625, line: { color: "FFFFFF", width: 1, transparency: 70 } });
+            slideCapa.addText("REAVIVADOS", { x:0, y:2.2, w:"100%", align:"center", fontSize:65, color:"FFFFFF", bold:true, fontFace:"Arial Black", shadow:{type:'outer', color:'000000', blur:10, offset:5, opacity:0.3} });
+            slideCapa.addText("POR SUA PALAVRA", { x:0, y:3.4, w:"100%", align:"center", fontSize:22, color:"BDC3C7", letterSpacing:6 });
+
+            // ==========================================
+            // FASE 1: PERGUNTAS
+            // ==========================================
+            lista.forEach(item => {
+                criarSlidePergunta(pptx, item, false, AZUL_HEADER, LARANJA, CINZA_BG, TEXTO);
+            });
+
+            // ==========================================
+            // SEPARADOR 1: CORREÇÃO
+            // ==========================================
+            let slideSep1 = pptx.addSlide();
+            slideSep1.background = { color: AZUL_FUNDO };
+            slideSep1.addShape(pptx.ShapeType.rect, { x: 0, y: 0, w: 0.8, h: "100%", fill: { color: LARANJA } });
+            slideSep1.addShape(pptx.ShapeType.triangle, { x: 0.8, y: 2.3, w: 0.5, h: 1, fill: { color: LARANJA }, rotate: 90 });
+            slideSep1.addText("CORREÇÃO", { x:1.5, y:2.2, w:8, fontSize:55, color:"FFFFFF", bold:true });
+            slideSep1.addText("DETALHADA", { x:1.5, y:3.2, w:8, fontSize:35, color:LARANJA, letterSpacing:3 });
+
+            // ==========================================
+            // FASE 2: CORREÇÃO DETALHADA
+            // ==========================================
+            lista.forEach(item => {
+                criarSlidePergunta(pptx, item, true, AZUL_HEADER, LARANJA, CINZA_BG, TEXTO, VERDE);
+            });
+
+            // ==========================================
+            // SEPARADOR 2: GABARITO
+            // ==========================================
+            let slideSep2 = pptx.addSlide();
+            slideSep2.background = { color: "212F3D" }; 
+            slideSep2.addShape(pptx.ShapeType.rect, { x: 2, y: 0, w: 6, h: 0.3, fill: { color: "3498DB" } });
+            slideSep2.addShape(pptx.ShapeType.rect, { x: 2, y: 5.325, w: 6, h: 0.3, fill: { color: "3498DB" } });
+            slideSep2.addText("GABARITO FINAL", { x:0, y:2.0, w:"100%", align:"center", fontSize:55, color:"FFFFFF", bold:true });
+            slideSep2.addText("RESUMO DA SEMANA", { x:0, y:3.0, w:"100%", align:"center", fontSize:20, color:"3498DB" });
+
+            // ==========================================
+            // FASE 3: GABARITO LISTA
+            // ==========================================
+            criarSlideGabarito(pptx, lista, AZUL_HEADER, LARANJA);
+
+            await pptx.writeFile({ fileName: "Reavivados_DesignPlus.pptx" });
+            btn.innerText = "BAIXAR APRESENTAÇÃO (.PPTX)";
+            btn.disabled = false;
+
+        } catch (erro) {
+            console.error(erro);
+            alert("ERRO: " + erro.message);
+            btn.innerText = "TENTAR NOVAMENTE";
+            btn.disabled = false;
+        }
+    }
+
+    // --- FUNÇÕES DE DESENHO (Mantidas iguais à versão 6.4) ---
+    function criarSlidePergunta(pptx, item, isCorrection, corHeader, corBonus, corBg, corTexto, corVerde = null) {
+        let slide = pptx.addSlide();
+        slide.background = { color: corBg };
+        let corTema = item.isBonus ? corBonus : corHeader;
+        let corDestaque = item.isBonus ? "FFD700" : "48C9B0"; 
+
+        slide.addShape(pptx.ShapeType.rect, { x:0, y:0, w:"100%", h:1.0, fill:{ color:corTema } });
+        slide.addText("REAVIVADOS", { x:0.3, y:0.2, fontSize:14, color:"FFFFFF", bold:true });
+        slide.addText("POR SUA PALAVRA", { x:0.3, y:0.45, fontSize:10, color:"CCCCCC" });
+        slide.addText(String(item.dia).toUpperCase(), { x:4, y:0.2, w:5.7, align:"right", fontSize:20, color:"FFFFFF", bold:true });
+        slide.addText(String(item.ref), { x:4, y:0.55, w:5.7, align:"right", fontSize:14, color:corDestaque, bold:true });
+
+        slide.addShape(pptx.ShapeType.ellipse, { x:0.3, y:1.3, w:0.8, h:0.8, fill:{ color:corTema } });
+        let txtNum = (item.num === 8) ? "★" : item.num;
+        slide.addText(String(txtNum), { x:0.3, y:1.3, w:0.8, h:0.8, align:"center", fontSize:24, color:"FFFFFF", bold:true });
+
+        slide.addText(String(item.perg), { x:1.3, y:1.3, w:8.4, h:1.2, fontSize:24, color:corTexto, bold:true, valign:"top", fontFace:"Arial" });
+
+        let yAlt = 2.7;
+        const gap = 0.75;
+        const opts = [{l:"A", t:item.a}, {l:"B", t:item.b}, {l:"C", t:item.c}];
+
+        opts.forEach(opt => {
+            if(!opt.t || opt.t.trim() === "") return;
+            let bgColor = "FFFFFF";
+            let lnColor = "BDC3C7";
+            let fontColor = "555555";
+            let isBold = false;
+
+            if(isCorrection) {
+                if(opt.l === item.resp) {
+                    bgColor = corVerde; lnColor = corVerde; fontColor = "FFFFFF"; isBold = true;
+                } else {
+                    fontColor = "CCCCCC"; lnColor = "EEEEEE";
+                }
+            }
+
+            slide.addShape(pptx.ShapeType.roundRect, { x:1.3, y:yAlt, w:8.0, h:0.6, fill:{ color:bgColor }, line:{ color:lnColor, width:1 }, rectRadius:0.2 });
+            slide.addText(opt.l + ")  " + String(opt.t), { x:1.4, y:yAlt, w:7.8, h:0.6, fontSize:18, color:fontColor, bold:isBold, valign:"middle" });
+            yAlt += gap;
+        });
+
+        if(isCorrection && item.verso && item.verso.trim() !== "") {
+            slide.addShape(pptx.ShapeType.rect, { x:0, y:5.0, w:"100%", h:0.65, fill:{ color:"EBF5FB" }, line:{ color:"3498DB", width:0, pt:0 } });
+            slide.addShape(pptx.ShapeType.rect, { x:0, y:5.0, w:0.1, h:0.65, fill:{ color:"3498DB" } });
+            slide.addText("VERSO: " + String(item.verso), { x:0.2, y:5.0, w:9.6, h:0.65, fontSize:14, color:"2874A6", valign:"middle", italic:true });
+        }
+    }
+
+    function criarSlideGabarito(pptx, lista, corHeader, corBonus) {
+        let slide = pptx.addSlide();
+        slide.background = { color: "FFFFFF" };
+        slide.addText("GABARITO DA SEMANA", { x:0, y:0.2, w:"100%", align:"center", fontSize:32, color:corHeader, bold:true });
+        slide.addShape(pptx.ShapeType.line, { x:3, y:0.8, w:4, h:0, line:{color:corHeader, width:2} });
+
+        let yL = 1.2, yR = 1.2;
+        lista.forEach((item, idx) => {
+            const isLeft = idx < 4; 
+            const xBase = isLeft ? 1.0 : 5.5;
+            let yBase = isLeft ? yL : yR;
+            let corItem = item.isBonus ? corBonus : corHeader;
+
+            slide.addShape(pptx.ShapeType.roundRect, { x:xBase, y:yBase, w:3.5, h:0.7, fill:{ color: "F4F6F7" }, line:{ color:"EEEEEE" } });
+            slide.addShape(pptx.ShapeType.ellipse, { x:xBase+0.1, y:yBase+0.1, w:0.5, h:0.5, fill:{ color:corItem } });
+            let txtNum = (item.num === 8) ? "★" : item.num;
+            slide.addText(String(txtNum), { x:xBase+0.1, y:yBase+0.1, w:0.5, h:0.5, align:"center", fontSize:16, color:"FFFFFF", bold:true });
+            slide.addText(String(item.dia), { x:xBase+0.7, y:yBase, w:2.0, h:0.7, fontSize:14, color:"333333", valign:"middle", bold:true });
+            slide.addText(String(item.resp || "-"), { x:xBase+2.8, y:yBase, w:0.5, h:0.7, align:"center", fontSize:24, color:corItem, bold:true, valign:"middle" });
+
+            if(isLeft) yL += 0.9; else yR += 0.9;
+        });
+    }
+</script>
+
+</body>
+</html>

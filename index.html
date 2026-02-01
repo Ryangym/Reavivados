@@ -3,297 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reavivados - Final</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <title>Ferramentas de Mídia - Igreja</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* CSS LIMPO E RESPONSIVO */
-        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; color: #333; }
-        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #f0f2f5; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .container { max-width: 800px; width: 100%; text-align: center; }
         
-        h1 { text-align: center; color: #154360; margin-bottom: 5px; font-size: 1.8rem; }
-        .subtitle { text-align: center; color: #7f8c8d; font-size: 1rem; margin-bottom: 30px; }
+        h1 { color: #2c3e50; margin-bottom: 10px; font-size: 2.5rem; }
+        p.subtitle { color: #7f8c8d; margin-bottom: 40px; font-size: 1.2rem; }
 
-        .day-block { border: 1px solid #e1e4e8; padding: 20px; margin-bottom: 20px; border-radius: 8px; background-color: #fff; position: relative; }
-        .day-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f2f2f2; padding-bottom: 10px; margin-bottom: 15px; }
-        .day-header h3 { margin: 0; color: #2980b9; font-size: 1.3rem; }
-        .day-number { background: #2980b9; color: white; padding: 5px 12px; border-radius: 20px; font-weight: bold; font-size: 0.9rem; }
+        .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; padding: 20px; }
 
-        /* Estilo Bônus */
-        .bonus-block { border: 2px solid #f39c12; background-color: #fefcf5; }
-        .bonus-block .day-header h3 { color: #d35400; }
-        .bonus-block .day-number { background: #d35400; }
+        .menu-card { background: white; padding: 40px 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); transition: transform 0.3s, box-shadow 0.3s; text-decoration: none; color: #333; display: flex; flex-direction: column; align-items: center; border: 2px solid transparent; }
+        
+        /* Cores Específicas para cada Card */
+        .card-reavivados { border-bottom-color: #3498db; }
+        .card-reavivados .icon-box { background: #e3f2fd; color: #3498db; }
+        .card-reavivados:hover { border-color: #3498db; }
 
-        label { display: block; margin-top: 15px; font-weight: 700; font-size: 0.95rem; color: #444; }
-        input[type="text"], select { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ccc; border-radius: 5px; font-size: 1.1rem; box-sizing: border-box; }
-        input:focus { border-color: #3498db; outline: none; border-width: 2px; }
+        .card-escala { border-bottom-color: #e67e22; }
+        .card-escala .icon-box { background: #fdf0e3; color: #e67e22; }
+        .card-escala:hover { border-color: #e67e22; }
 
-        .gabarito-area { background-color: #e8f8f5; padding: 15px; border-radius: 6px; margin-top: 15px; border-left: 5px solid #2ecc71; }
+        .menu-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
 
-        button { width: 100%; padding: 20px; background-color: #27ae60; color: white; border: none; border-radius: 8px; font-size: 1.4rem; font-weight: bold; cursor: pointer; margin-top: 25px; transition: background 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        button:hover { background-color: #219150; }
+        .icon-box { width: 80px; height: 80px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 2.5rem; margin-bottom: 25px; transition: 0.3s; }
+        
+        h2 { margin: 0 0 15px 0; font-size: 1.8rem; color: #2c3e50; }
+        p.desc { color: #7f8c8d; margin: 0; line-height: 1.5; }
 
         @media (max-width: 600px) {
-            body { padding: 10px; }
-            .container { padding: 15px; }
-            input[type="text"] { font-size: 16px; } 
+            h1 { font-size: 2rem; }
+            .menu-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Gerador de Slides</h1>
-    <p class="subtitle">Ordem: Sábado a Sexta-feira</p>
+    <h1>Central de Mídia</h1>
+    <p class="subtitle">Selecione a ferramenta que deseja utilizar</p>
 
-    <form id="quizForm">
-        <div id="daysContainer"></div>
-        
-        <div class="day-block bonus-block">
-            <div class="day-header">
-                <h3>★ Pergunta Bônus</h3>
-                <span class="day-number">#8</span>
-            </div>
-            <label>Referência/Título:</label>
-            <input type="text" id="bonus_ref" placeholder="Ex: Curiosidade...">
-            <label>Pergunta:</label>
-            <input type="text" id="bonus_perg" placeholder="Deixe em branco se não houver">
-            <label>Alternativas:</label>
-            <input type="text" id="bonus_altA" placeholder="A)">
-            <input type="text" id="bonus_altB" placeholder="B)">
-            <input type="text" id="bonus_altC" placeholder="C)">
-            <div class="gabarito-area">
-                <label>Resposta Correta:</label>
-                <select id="bonus_respCorreta"><option value="">Selecione...</option><option value="A">A</option><option value="B">B</option><option value="C">C</option></select>
-            </div>
-        </div>
+    <div class="menu-grid">
+        <a href="reavivados.html" class="menu-card card-reavivados">
+            <div class="icon-box"><i class="fas fa-bible"></i></div>
+            <h2>Reavivados Quiz</h2>
+            <p class="desc">Gerador de slides em PowerPoint com perguntas, correção animada e gabarito.</p>
+        </a>
 
-        <button type="button" onclick="gerarPDF()">BAIXAR SLIDES AGORA</button>
-    </form>
+        <a href="escala.html" class="menu-card card-escala">
+            <div class="icon-box"><i class="fas fa-calendar-alt"></i></div>
+            <h2>Gerador de Escala</h2>
+            <p class="desc">Crie imagens profissionais da escala da semana para postar nas redes sociais.</p>
+        </a>
+    </div>
 </div>
-
-<script>
-    const dias = ["Sábado", "Domingo", "Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira"];
-    const container = document.getElementById('daysContainer');
-
-    // 1. Gera os Inputs na tela
-    dias.forEach((dia, index) => {
-        const numeroQuestao = index + 1;
-        const html = `
-            <div class="day-block">
-                <div class="day-header">
-                    <h3>${dia}</h3>
-                    <span class="day-number">#${numeroQuestao}</span>
-                </div>
-                <label>Capítulo / Referência:</label>
-                <input type="text" id="ref_${index}" placeholder="Ex: Salmos 23">
-                <label>Pergunta:</label>
-                <input type="text" id="perg_${index}" placeholder="Digite a pergunta...">
-                <label>Alternativas:</label>
-                <input type="text" id="altA_${index}" placeholder="A)">
-                <input type="text" id="altB_${index}" placeholder="B)">
-                <input type="text" id="altC_${index}" placeholder="C)">
-                <div class="gabarito-area">
-                    <label>Resposta Correta:</label>
-                    <select id="respCorreta_${index}"><option value="">Selecione...</option><option value="A">A</option><option value="B">B</option><option value="C">C</option></select>
-                </div>
-            </div>`;
-        container.insertAdjacentHTML('beforeend', html);
-    });
-
-    // 2. Gerar PDF
-    async function gerarPDF() {
-        if (!window.jspdf) { alert("Erro: Conecte-se à internet para carregar o gerador na primeira vez."); return; }
-        
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
-        const w = doc.internal.pageSize.getWidth(); 
-        const h = doc.internal.pageSize.getHeight(); 
-        
-        // Cores
-        const azulForte = [21, 67, 96];   
-        const dourado   = [241, 196, 15]; 
-        const laranjaBonus = [211, 84, 0];
-        
-        let listaGabarito = [];
-
-        // Loop Dias Normais
-        for (let i = 0; i < dias.length; i++) {
-            const dia = dias[i];
-            const num = i + 1; // 1 a 7
-            const ref = document.getElementById(`ref_${i}`).value || "";
-            const pergunta = document.getElementById(`perg_${i}`).value || "";
-            const a = document.getElementById(`altA_${i}`).value;
-            const b = document.getElementById(`altB_${i}`).value;
-            const c = document.getElementById(`altC_${i}`).value;
-            const resp = document.getElementById(`respCorreta_${i}`).value || "-";
-
-            if(!pergunta && !ref) continue; 
-
-            listaGabarito.push({ dia, num, resp });
-            
-            desenharSlideMax(doc, azulForte, dourado, dia, num, ref, pergunta, a, b, c);
-            doc.addPage();
-        }
-
-        // Bônus
-        const bPerg = document.getElementById('bonus_perg').value;
-        if(bPerg && bPerg.trim() !== "") {
-            const bRef = document.getElementById('bonus_ref').value || "Bônus";
-            const bResp = document.getElementById('bonus_respCorreta').value;
-            
-            // Adiciona como número 8
-            listaGabarito.push({ dia: "PERGUNTA BÔNUS", num: 8, resp: bResp });
-            
-            desenharSlideMax(doc, laranjaBonus, [255,255,255], "PERGUNTA BÔNUS", 8, bRef, bPerg, 
-                document.getElementById('bonus_altA').value, 
-                document.getElementById('bonus_altB').value, 
-                document.getElementById('bonus_altC').value
-            );
-            doc.addPage();
-        }
-
-        // Pausa
-        doc.setFillColor(20, 20, 20);
-        doc.rect(0, 0, w, h, 'F');
-        doc.setTextColor(255, 255, 255);
-        doc.setFontSize(50); 
-        doc.setFont("helvetica", "bold");
-        doc.text("GABARITO", w/2, h/2 - 10, {align: 'center'});
-        doc.setFontSize(20);
-        doc.setFont("helvetica", "normal");
-        doc.text("CONFIRA AS RESPOSTAS A SEGUIR", w/2, h/2 + 15, {align: 'center'});
-        doc.addPage();
-
-        // Gabarito
-        desenharGabarito(doc, listaGabarito, azulForte);
-
-        doc.save('Reavivados_Slides.pdf');
-    }
-
-    // --- SLIDE DE PERGUNTA ---
-    function desenharSlideMax(doc, corHeader, corDestaque, tituloDia, numero, referencia, pergunta, a, b, c) {
-        const w = doc.internal.pageSize.getWidth();
-        const h = doc.internal.pageSize.getHeight();
-
-        // Fundo Branco
-        doc.setFillColor(255, 255, 255);
-        doc.rect(0, 0, w, h, 'F');
-
-        // Barra do Cabeçalho
-        doc.setFillColor(...corHeader);
-        doc.rect(0, 0, w, 35, 'F'); 
-
-        // Logo Texto (Esquerda Superior)
-        doc.setTextColor(255, 255, 255);
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(18);
-        doc.text("REAVIVADOS", 15, 16);
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(12);
-        doc.text("POR SUA PALAVRA", 15, 23);
-
-        // Referência (Direita Superior)
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(26); 
-        doc.setTextColor(255, 255, 255); 
-        doc.text(tituloDia.toUpperCase(), w - 15, 16, {align: 'right'});
-        
-        doc.setFontSize(16);
-        doc.setTextColor(...corDestaque); 
-        doc.text(referencia, w - 15, 25, {align: 'right'});
-
-
-        // --- NÚMERO E PERGUNTA (LADO A LADO) ---
-        
-        // 1. Número da Questão (Preto)
-        doc.setTextColor(0, 0, 0); // COR ALTERADA PARA PRETO
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(50); 
-        doc.text(`${numero})`, 15, 60);
-
-        // 2. Pergunta (À direita do número)
-        doc.setTextColor(20, 20, 20);
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(34); 
-        
-        // Calcula a largura da pergunta (Total - MargemEsq - EspaçoNumero - MargemDir)
-        // Começa em X=45
-        const larguraPergunta = w - 45 - 15;
-        const perguntaQuebrada = doc.splitTextToSize(pergunta, larguraPergunta);
-        doc.text(perguntaQuebrada, 45, 60); // Posiciona em X=45, Y=60
-
-        // Alternativas (Calcula nova altura baseada na pergunta)
-        const alturaPergunta = perguntaQuebrada.length * 14; 
-        let y = 60 + alturaPergunta + 20; 
-        if (y < 115) y = 115; 
-
-        doc.setFontSize(28); 
-        doc.setFont("helvetica", "normal");
-
-        const desenharAlt = (letra, texto) => {
-            if(!texto) return;
-            doc.setFont("helvetica", "bold");
-            doc.setTextColor(...corHeader);
-            doc.text(`${letra})`, 15, y);
-            
-            doc.setFont("helvetica", "normal");
-            doc.setTextColor(40, 40, 40);
-            
-            const textoQuebrado = doc.splitTextToSize(texto, w - 45);
-            doc.text(textoQuebrado, 32, y); 
-            y += (textoQuebrado.length * 13) + 10;
-        };
-
-        desenharAlt("A", a);
-        desenharAlt("B", b);
-        desenharAlt("C", c);
-    }
-
-    // --- GABARITO ---
-    function desenharGabarito(doc, lista, corTema) {
-        const w = doc.internal.pageSize.getWidth();
-        const h = doc.internal.pageSize.getHeight();
-        
-        doc.setFillColor(...corTema);
-        doc.rect(0, 0, w, 35, 'F');
-        doc.setTextColor(255, 255, 255);
-        doc.setFontSize(26);
-        doc.setFont("helvetica", "bold");
-        doc.text("GABARITO DA SEMANA", w/2, 23, {align: 'center'});
-
-        let y = 55;
-        const gap = 19; 
-        
-        lista.forEach(item => {
-            // Dia e Número
-            doc.setFontSize(24); 
-            doc.setFont("helvetica", "bold");
-            
-            if(item.dia.includes("BÔNUS")) doc.setTextColor(211, 84, 0); 
-            else doc.setTextColor(40, 40, 40); 
-            
-            doc.text(`${item.num}. ${item.dia}`, 25, y + 2);
-
-            // Bolinha da Resposta
-            const corBolinha = item.dia.includes("BÔNUS") ? [211, 84, 0] : [21, 67, 96]; 
-            doc.setFillColor(...corBolinha);
-            
-            doc.circle(w - 40, y - 1, 8, 'F');
-
-            // Letra da Resposta
-            doc.setTextColor(255, 255, 255); 
-            doc.setFontSize(32); 
-            doc.setFont("helvetica", "bold");
-            doc.text(item.resp, w - 40, y + 3, {align: 'center'});
-
-            doc.setDrawColor(230, 230, 230);
-            doc.setLineWidth(0.5);
-            doc.line(25, y + 10, w - 25, y + 10);
-
-            y += gap;
-        });
-    }
-</script>
 
 </body>
 </html>
