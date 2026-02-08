@@ -2,88 +2,61 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>Gerador PowerPoint</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador Reavivados 7.0 (Animação)</title>
     
     <script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
     
     <style>
-        /* --- ESTILOS GERAIS --- */
-        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #eef2f5; margin: 0; padding: 20px; color: #333; }
-
-        .back-link { display: inline-block; margin-bottom: 20px; color: #3498db; text-decoration: none; font-weight: bold; }
-        .back-link:hover { text-decoration: underline; }
-        
-        .container { 
-            max-width: 900px; 
-            margin: 0 auto; 
-            background: white; 
-            padding: 40px; 
-            border-radius: 15px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
-        }
+        /* ESTILO LIMPO E MODERNO */
+        body { font-family: 'Segoe UI', sans-serif; background: #eef2f5; margin: 0; padding: 20px; color: #333; }
+        .container { max-width: 900px; margin: 0 auto; background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
         
         h1 { text-align: center; color: #2c3e50; margin-bottom: 5px; font-size: 2rem; text-transform: uppercase; letter-spacing: 1px; }
         .subtitle { text-align: center; color: #7f8c8d; font-size: 1rem; margin-bottom: 30px; }
 
-        /* --- BLOCOS DE PERGUNTAS --- */
-        .day-block { 
-            background: #fff; 
-            border: 1px solid #e0e0e0; 
-            padding: 25px; 
-            margin-bottom: 25px; 
-            border-radius: 10px; 
-            border-left: 5px solid #2c3e50; 
-        }
-        
+        .day-block { background: #fff; border: 1px solid #e0e0e0; padding: 25px; margin-bottom: 25px; border-radius: 10px; border-left: 5px solid #2c3e50; }
         .day-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
         .day-header h3 { margin: 0; color: #2c3e50; font-size: 1.4rem; }
-        .day-number { background: #2c3e50; color: white; padding: 5px 12px; border-radius: 20px; font-weight: bold; font-size: 0.9rem; white-space: nowrap; }
+        .day-number { background: #2c3e50; color: white; padding: 5px 12px; border-radius: 20px; font-weight: bold; font-size: 0.9rem; }
 
         .bonus-block { border-left-color: #d35400; background-color: #fffaf0; }
         .bonus-block .day-header h3 { color: #d35400; }
         .bonus-block .day-number { background: #d35400; }
 
-        /* --- FORMULÁRIO E GRID --- */
-        label { display: block; margin-top: 12px; font-weight: 700; font-size: 0.85rem; color: #7f8c8d; text-transform: uppercase; }
-        input[type="text"], select { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem; box-sizing: border-box; }
-        
-        /* Grid para colocar campos lado a lado no PC e empilhado no mobile */
+        /* INPUTS */
+        label { display: block; margin-top: 12px; font-weight: 700; font-size: 0.8rem; color: #7f8c8d; text-transform: uppercase; }
+        input[type="text"], select { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem; box-sizing: border-box; background: #f9f9f9; }
+        input[type="text"]:focus, select:focus { border-color: #3498db; outline: none; background: #fff; }
+
+        /* GRID PARA PC */
         .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         
-        .box-alternativas { background: #f9f9f9; padding: 15px; border-radius: 8px; margin-top: 10px; }
+        .box-alternativas { background: #f8f9fa; padding: 15px; border-radius: 8px; margin-top: 10px; border: 1px solid #eee; }
         .box-alternativas input { margin-bottom: 8px; }
         .box-alternativas input:last-child { margin-bottom: 0; }
 
-        .verso-input { background-color: #f0f8ff; border-color: #b3e5fc !important; color: #0277bd; font-weight: 500; }
+        .verso-input { background-color: #f0f8ff; border-color: #b3e5fc !important; color: #0277bd; font-weight: 600; }
         .gabarito-area { background-color: #e8f8f5; padding: 15px; border-radius: 8px; margin-top: 15px; border: 1px solid #a3e4d7; }
 
         button { width: 100%; padding: 20px; background: linear-gradient(135deg, #2c3e50, #3498db); color: white; border: none; border-radius: 8px; font-size: 1.3rem; font-weight: bold; cursor: pointer; margin-top: 30px; transition: 0.3s; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
         button:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.25); }
-        button:disabled { background: #95a5a6; cursor: not-allowed; transform: none; box-shadow: none; }
+        button:disabled { background: #95a5a6; cursor: not-allowed; box-shadow: none; transform: none; }
 
-        /* --- RESPONSIVIDADE (MOBILE) --- */
+        /* MOBILE */
         @media (max-width: 768px) {
             body { padding: 10px; }
             .container { padding: 20px; }
-            
-            h1 { font-size: 1.5rem; }
-            .subtitle { font-size: 0.9rem; }
-
-            .day-block { padding: 15px; }
-            .day-header h3 { font-size: 1.1rem; }
-            
-            /* Transforma grid de 2 colunas em 1 coluna */
             .input-row { grid-template-columns: 1fr; gap: 0; }
-            
-            button { font-size: 1.1rem; padding: 15px; }
+            h1 { font-size: 1.5rem; }
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <a href="index.html" class="back-link">← Voltar ao Menu Principal</a>
-    <h1>Gerador PowerPoint - <span style="color:#3498db">Reavivados por sua palavra</span></h1>
+    <h1>Gerador <span style="color:#3498db">Reavivados 7.0</span></h1>
+    <p class="subtitle">Com Animação de Revelação da Resposta</p>
 
     <form id="quizForm">
         <div id="daysContainer"></div>
@@ -95,25 +68,22 @@
             </div>
             <div class="input-row">
                 <div><label>Referência:</label><input type="text" id="bonus_ref" placeholder="Ex: Curiosidade..."></div>
-                <div><label>Numero do Verso (Correção):</label><input type="text" id="bonus_verso" class="verso-input" placeholder="Ex: 10-12"></div>
+                <div><label>Verso (Correção):</label><input type="text" id="bonus_verso" class="verso-input" placeholder="Justificativa..."></div>
             </div>
-            
             <label>Pergunta:</label><input type="text" id="bonus_perg" placeholder="Pergunta bônus...">
-            
             <div class="box-alternativas">
                 <label style="margin-top:0">Alternativas:</label>
                 <input type="text" id="bonus_altA" placeholder="A)">
                 <input type="text" id="bonus_altB" placeholder="B)">
                 <input type="text" id="bonus_altC" placeholder="C)">
             </div>
-            
             <div class="gabarito-area">
                 <label>Resposta Correta:</label>
                 <select id="bonus_respCorreta"><option value="">Selecione...</option><option value="A">A</option><option value="B">B</option><option value="C">C</option></select>
             </div>
         </div>
 
-        <button type="button" id="btnBaixar" onclick="gerarPPTX()">BAIXAR APRESENTAÇÃO (.PPTX)</button>
+        <button type="button" id="btnBaixar" onclick="gerarPPTX()">BAIXAR POWERPOINT (.PPTX)</button>
     </form>
 </div>
 
@@ -121,27 +91,23 @@
     const dias = ["Sábado", "Domingo", "Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira"];
     const container = document.getElementById('daysContainer');
 
-    // Gera os Inputs (HTML Otimizado com classes)
+    // Gera os Inputs
     dias.forEach((dia, index) => {
         const num = index + 1;
         const html = `
             <div class="day-block">
                 <div class="day-header"><h3>${dia}</h3><span class="day-number">#${num}</span></div>
-                
                 <div class="input-row">
                     <div><label>Referência:</label><input type="text" id="ref_${index}" placeholder="Ex: Gênesis 1"></div>
-                    <div><label>Número do Verso (Correção):</label><input type="text" id="verso_${index}" class="verso-input" placeholder="Ex: 10-12"></div>
+                    <div><label>Verso (Correção):</label><input type="text" id="verso_${index}" class="verso-input" placeholder="Justificativa..."></div>
                 </div>
-
                 <label>Pergunta:</label><input type="text" id="perg_${index}" placeholder="Digite a pergunta...">
-                
                 <div class="box-alternativas">
                     <label style="margin-top:0">Alternativas:</label>
                     <input type="text" id="altA_${index}" placeholder="A)">
                     <input type="text" id="altB_${index}" placeholder="B)">
                     <input type="text" id="altC_${index}" placeholder="C)">
                 </div>
-
                 <div class="gabarito-area">
                     <label>Resposta Correta:</label>
                     <select id="respCorreta_${index}"><option value="">Selecione...</option><option value="A">A</option><option value="B">B</option><option value="C">C</option></select>
@@ -154,7 +120,7 @@
         const btn = document.getElementById("btnBaixar");
         
         if (typeof PptxGenJS === 'undefined') {
-            alert("ERRO: A biblioteca PowerPoint não carregou. Verifique sua conexão.");
+            alert("ERRO: A biblioteca PowerPoint não carregou. Verifique sua internet.");
             return;
         }
 
@@ -209,7 +175,7 @@
             if(lista.length === 0) { throw new Error("Preencha pelo menos uma pergunta!"); }
 
             // ==========================================
-            // CAPA DESIGN PLUS
+            // CAPA
             // ==========================================
             let slideCapa = pptx.addSlide();
             slideCapa.background = { color: AZUL_FUNDO };
@@ -220,7 +186,7 @@
             slideCapa.addText("POR SUA PALAVRA", { x:0, y:3.4, w:"100%", align:"center", fontSize:22, color:"BDC3C7", letterSpacing:6 });
 
             // ==========================================
-            // FASE 1: PERGUNTAS
+            // FASE 1: PERGUNTAS (Passa 1 por 1 sem resposta)
             // ==========================================
             lista.forEach(item => {
                 criarSlidePergunta(pptx, item, false, AZUL_HEADER, LARANJA, CINZA_BG, TEXTO);
@@ -237,9 +203,15 @@
             slideSep1.addText("DETALHADA", { x:1.5, y:3.2, w:8, fontSize:35, color:LARANJA, letterSpacing:3 });
 
             // ==========================================
-            // FASE 2: CORREÇÃO DETALHADA
+            // FASE 2: CORREÇÃO ANIMADA (AQUI ESTÁ A MÁGICA)
             // ==========================================
             lista.forEach(item => {
+                // Passo 1: Mostra de novo a pergunta "limpa" (Neutro)
+                criarSlidePergunta(pptx, item, false, AZUL_HEADER, LARANJA, CINZA_BG, TEXTO);
+                
+                // Passo 2: Ao clicar, vai para o próximo slide que é IDÊNTICO, 
+                // mas com a resposta pintada de verde e o verso aparecendo.
+                // Isso cria a ilusão perfeita de animação.
                 criarSlidePergunta(pptx, item, true, AZUL_HEADER, LARANJA, CINZA_BG, TEXTO, VERDE);
             });
 
@@ -258,8 +230,8 @@
             // ==========================================
             criarSlideGabarito(pptx, lista, AZUL_HEADER, LARANJA);
 
-            await pptx.writeFile({ fileName: "Reavivados_DesignPlus.pptx" });
-            btn.innerText = "BAIXAR APRESENTAÇÃO (.PPTX)";
+            await pptx.writeFile({ fileName: "Reavivados_Final.pptx" });
+            btn.innerText = "BAIXAR POWERPOINT (.PPTX)";
             btn.disabled = false;
 
         } catch (erro) {
@@ -270,25 +242,30 @@
         }
     }
 
-    // --- FUNÇÕES DE DESENHO (Mantidas iguais à versão 6.4) ---
+    // --- DESENHO DOS SLIDES ---
     function criarSlidePergunta(pptx, item, isCorrection, corHeader, corBonus, corBg, corTexto, corVerde = null) {
         let slide = pptx.addSlide();
         slide.background = { color: corBg };
+        
         let corTema = item.isBonus ? corBonus : corHeader;
         let corDestaque = item.isBonus ? "FFD700" : "48C9B0"; 
 
+        // Header
         slide.addShape(pptx.ShapeType.rect, { x:0, y:0, w:"100%", h:1.0, fill:{ color:corTema } });
         slide.addText("REAVIVADOS", { x:0.3, y:0.2, fontSize:14, color:"FFFFFF", bold:true });
         slide.addText("POR SUA PALAVRA", { x:0.3, y:0.45, fontSize:10, color:"CCCCCC" });
         slide.addText(String(item.dia).toUpperCase(), { x:4, y:0.2, w:5.7, align:"right", fontSize:20, color:"FFFFFF", bold:true });
         slide.addText(String(item.ref), { x:4, y:0.55, w:5.7, align:"right", fontSize:14, color:corDestaque, bold:true });
 
+        // Bola Numero
         slide.addShape(pptx.ShapeType.ellipse, { x:0.3, y:1.3, w:0.8, h:0.8, fill:{ color:corTema } });
         let txtNum = (item.num === 8) ? "★" : item.num;
         slide.addText(String(txtNum), { x:0.3, y:1.3, w:0.8, h:0.8, align:"center", fontSize:24, color:"FFFFFF", bold:true });
 
+        // Pergunta
         slide.addText(String(item.perg), { x:1.3, y:1.3, w:8.4, h:1.2, fontSize:24, color:corTexto, bold:true, valign:"top", fontFace:"Arial" });
 
+        // Alternativas
         let yAlt = 2.7;
         const gap = 0.75;
         const opts = [{l:"A", t:item.a}, {l:"B", t:item.b}, {l:"C", t:item.c}];
@@ -302,9 +279,13 @@
 
             if(isCorrection) {
                 if(opt.l === item.resp) {
-                    bgColor = corVerde; lnColor = corVerde; fontColor = "FFFFFF"; isBold = true;
+                    bgColor = corVerde; 
+                    lnColor = corVerde;
+                    fontColor = "FFFFFF"; 
+                    isBold = true;
                 } else {
-                    fontColor = "CCCCCC"; lnColor = "EEEEEE";
+                    fontColor = "CCCCCC"; // Apaga as erradas
+                    lnColor = "EEEEEE";
                 }
             }
 
@@ -313,6 +294,7 @@
             yAlt += gap;
         });
 
+        // Verso (Só aparece na Correção)
         if(isCorrection && item.verso && item.verso.trim() !== "") {
             slide.addShape(pptx.ShapeType.rect, { x:0, y:5.0, w:"100%", h:0.65, fill:{ color:"EBF5FB" }, line:{ color:"3498DB", width:0, pt:0 } });
             slide.addShape(pptx.ShapeType.rect, { x:0, y:5.0, w:0.1, h:0.65, fill:{ color:"3498DB" } });
